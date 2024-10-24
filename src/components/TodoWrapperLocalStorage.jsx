@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import TodoForm from "./TodoForm";
 import Todo from "./Todo";
 import { v4 as uuidv4 } from "uuid";
+import EditTodoForm from "./EditTodoForm";
 uuidv4(); // ⇨ '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'
 
 const TodoWrapperLocalStorage = () => {
@@ -42,6 +43,28 @@ const TodoWrapperLocalStorage = () => {
     localStorage.setItem("todos", JSON.stringify(newTodos));
   };
 
+  const editTodo = (id) => {
+    const newTodos = todos.map((todo) =>
+      todo.id === id ? { ...todo, isEditing: !todo.isEditing } : todo
+    );
+
+    setTodos(newTodos);
+    localStorage.setItem("todos", JSON.stringify(newTodos));
+  };
+
+  const editTask = (task, id) => {
+    console.log(task);
+
+    const newTodos = todos.map((todo) =>
+      todo.id === id
+        ? { ...todo, task: task, isEditing: !todo.isEditing }
+        : todo
+    );
+
+    setTodos(newTodos);
+    localStorage.setItem("todos", JSON.stringify(newTodos));
+  };
+
   console.log(todos);
 
   return (
@@ -49,15 +72,19 @@ const TodoWrapperLocalStorage = () => {
       <div className="TodoWrapper">
         <h1>Get Things Done LocalStorage!</h1>
         <TodoForm addTodo={addTodo} />
-        {todos !== null &&
-          todos.map((todo) => (
+        {todos.map((todo) =>
+          todo.isEditing ? (
+            <EditTodoForm task={todo} editTask={editTask} key={todo.id} />
+          ) : (
             <Todo
               task={todo}
               key={todo.id}
               deleteTodo={deleteTodo}
               toggleComplete={toggleComplete}
+              editTodo={editTodo}
             />
-          ))}
+          )
+        )}
 
         {/* <Todo task={{ task: "Hello" }} /> */}
       </div>

@@ -2,7 +2,7 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan, faFilePen } from "@fortawesome/free-solid-svg-icons";
 
-const todo = ({ task, deleteTodo, toggleComplete }) => {
+const todo = ({ task, deleteTodo, editTodo, toggleComplete }) => {
   // console.log("Todo: " + task.task);
 
   return (
@@ -16,7 +16,7 @@ const todo = ({ task, deleteTodo, toggleComplete }) => {
           checked={task.isCompleted}
           onClick={() => toggleComplete(task.id)}
         />
-        <label class="form-check-label" for={task.id}>
+        <label className="form-check-label" htmlFor={task.id}>
           <p
             className={task.isCompleted ? "completed" : "incompleted"}
             onClick={() => toggleComplete(task.id)}
@@ -26,7 +26,11 @@ const todo = ({ task, deleteTodo, toggleComplete }) => {
         </label>
       </div>
       <div>
-        <FontAwesomeIcon className="edit-icon" icon={faFilePen} />
+        <FontAwesomeIcon
+          className="edit-icon"
+          icon={faFilePen}
+          onClick={() => editTodo(task.id)}
+        />
         <FontAwesomeIcon
           className="delete-icon"
           icon={faTrashCan}
