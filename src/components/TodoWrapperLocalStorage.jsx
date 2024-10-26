@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import TodoForm from "./TodoForm";
 import Todo from "./Todo";
 import { v4 as uuidv4 } from "uuid";
@@ -65,29 +66,78 @@ const TodoWrapperLocalStorage = () => {
     localStorage.setItem("todos", JSON.stringify(newTodos));
   };
 
-  console.log(todos);
+  const OnDragEndResponder = (result) => {
+    // console.log(result);
+    if (!result.destination) return;
+    const sourceIndex = result.source.index;
+    const destinationIndex = result.destination.index;
+    // console.log("s:" + sourceIndex);
+    // console.log("d:" + destinationIndex);
+
+    const replacedTodos = todos.slice();
+
+    const sourceValue = replacedTodos.splice(
+      sourceIndex,
+      1,
+      todos[destinationIndex]
+    );
+
+    const destinationValue = replacedTodos.splice(
+      destinationIndex,
+      1,
+      todos[sourceIndex]
+    );
+
+    // console.log(replacedTodos);
+    setTodos(replacedTodos);
+    localStorage.setItem("todos", JSON.stringify(replacedTodos));
+    // console.log(todos);
+  };
+
+  // console.log(todos);
 
   return (
     <>
-      <div className="TodoWrapper">
-        <h1>Get Things Done LocalStorage!</h1>
-        <TodoForm addTodo={addTodo} />
-        {todos.map((todo) =>
-          todo.isEditing ? (
-            <EditTodoForm task={todo} editTask={editTask} key={todo.id} />
-          ) : (
-            <Todo
-              task={todo}
-              key={todo.id}
-              deleteTodo={deleteTodo}
-              toggleComplete={toggleComplete}
-              editTodo={editTodo}
-            />
-          )
-        )}
+      <DragDropContext onDragEnd={OnDragEndResponder}>
+        <Droppable droppableId="todo">
+          {(provided) => (
+            <div
+              className="TodoWrapper"
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+            >
+              <h1>Get Things Done LocalStorage!</h1>
+              <TodoForm addTodo={addTodo} />
+              {todos.map((todo, index) =>
+                todo.isEditing ? (
+                  <EditTodoForm task={todo} editTask={editTask} key={todo.id} />
+                ) : (
+                  <Draggable key={todo.id} draggableId={todo.id} index={index}>
+                    {(provided) => (
+                      <div
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        ref={provided.innerRef}
+                      >
+                        <Todo
+                          task={todo}
+                          key={todo.id}
+                          deleteTodo={deleteTodo}
+                          toggleComplete={toggleComplete}
+                          editTodo={editTodo}
+                        />
+                      </div>
+                    )}
+                  </Draggable>
+                )
+              )}
 
-        {/* <Todo task={{ task: "Hello" }} /> */}
-      </div>
+              {/* <Todo task={{ task: "Hello" }} /> */}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
     </>
   );
 };

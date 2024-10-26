@@ -7,13 +7,17 @@ const todo = ({ task, deleteTodo, editTodo, toggleComplete }) => {
 
   return (
     <div className="Todo">
-      <div class="form-check form-check-inline">
+      <div className="form-check form-check-inline">
         <input
           className="form-check-input"
           type="checkbox"
           id={task.id}
           value={task.id}
           checked={task.isCompleted}
+          onChange={(e) => {
+            console.log(e.target.value);
+            // setValue(e.target.value);
+          }}
           onClick={() => toggleComplete(task.id)}
         />
         <label className="form-check-label" htmlFor={task.id}>
